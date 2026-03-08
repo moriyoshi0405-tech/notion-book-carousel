@@ -4,7 +4,7 @@
 
 <meta charset="utf-8">
 
-<title>Bookshelf</title>
+<title>Library</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet">
 
@@ -12,70 +12,53 @@
 
 body{
 margin:0;
-font-family:"Noto Serif JP", serif;
-background:linear-gradient(180deg,#faf7f2,#f1ece6);
+font-family:"Noto Serif JP",serif;
+background:linear-gradient(180deg,#f7f3ee,#ece5dc);
 padding:60px 20px;
 text-align:center;
-color:#3a342e;
+color:#3b352f;
 }
 
 h2{
-font-size:28px;
-font-weight:600;
-letter-spacing:2px;
-margin-bottom:40px;
+font-size:30px;
+letter-spacing:3px;
+margin-bottom:50px;
 }
 
 .carousel{
+position:relative;
 overflow:hidden;
 width:100%;
 }
 
 .track{
 display:flex;
-gap:36px;
-animation:scroll 45s linear infinite;
-}
-
-.carousel:hover .track{
-animation-play-state:paused;
+gap:40px;
+transition:transform .6s ease;
 }
 
 .book{
 flex:0 0 auto;
-transition:transform .4s;
+width:160px;
+transition:transform .5s;
 }
 
 .book img{
-width:150px;
+width:160px;
 border-radius:10px;
-box-shadow:0 15px 35px rgba(0,0,0,0.18);
-transition:transform .3s, box-shadow .3s;
-}
-
-.book:hover img{
-transform:translateY(-8px);
-box-shadow:0 25px 45px rgba(0,0,0,0.25);
+box-shadow:0 20px 40px rgba(0,0,0,0.25);
+transition:transform .5s, box-shadow .5s;
 }
 
 .book-title{
-font-size:13px;
-margin-top:10px;
-width:150px;
+font-size:14px;
+margin-top:12px;
 line-height:1.4;
 }
 
 .book.center img{
-transform:scale(1.25);
-}
-
-@keyframes scroll{
-0%{
-transform:translateX(0);
-}
-100%{
-transform:translateX(-50%);
-}
+transform:scale(1.35);
+box-shadow:0 30px 60px rgba(0,0,0,0.35);
 }
 
 </style>
@@ -84,7 +67,7 @@ transform:translateX(-50%);
 
 <body>
 
-<h2>心を動かした本</h2>
+<h2>心を動かした本たち</h2>
 
 <div class="carousel">
 <div class="track" id="track"></div>
@@ -92,17 +75,21 @@ transform:translateX(-50%);
 
 <script>
 
-const API_URL = "https://script.google.com/macros/s/AKfycbw8q63nwevVB2noI6Fj_KNJhPvWjLNBKiJEW_IW_oi_8qEQ-a0iLQz11bAIpUy2u7TxVQ/exec";
+const API_URL="https://script.google.com/macros/s/AKfycbw8q63nwevVB2noI6Fj_KNJhPvWjLNBKiJEW_IW_oi_8qEQ-a0iLQz11bAIpUy2u7TxVQ/exec"
+
+let books=[]
+let index=0
+let autoScroll
 
 fetch(API_URL)
 .then(res=>res.json())
-.then(books=>{
+.then(data=>{
+
+books=[...data,...data,...data]
 
 const track=document.getElementById("track")
 
-const list=[...books,...books]
-
-list.forEach(book=>{
+books.forEach(book=>{
 
 const div=document.createElement("div")
 div.className="book"
@@ -118,23 +105,86 @@ track.appendChild(div)
 
 })
 
-highlightCenter()
+updateCarousel()
+startAutoScroll()
+
+enableDrag()
 
 })
 
-function highlightCenter(){
+function updateCarousel(){
 
-const books=document.querySelectorAll(".book")
+const track=document.getElementById("track")
 
-setInterval(()=>{
+const bookWidth=200
 
-books.forEach(b=>b.classList.remove("center"))
+track.style.transform=`translateX(${-index*bookWidth}px)`
 
-const middle=Math.floor(Math.random()*books.length)
+const items=document.querySelectorAll(".book")
 
-books[middle].classList.add("center")
+items.forEach(i=>i.classList.remove("center"))
 
-},2000)
+const center=index+2
+
+if(items[center]) items[center].classList.add("center")
+
+}
+
+function startAutoScroll(){
+
+autoScroll=setInterval(()=>{
+
+index++
+
+updateCarousel()
+
+},2500)
+
+}
+
+function enableDrag(){
+
+let startX
+let isDown=false
+
+const carousel=document.querySelector(".carousel")
+
+carousel.addEventListener("mousedown",e=>{
+
+isDown=true
+startX=e.pageX
+clearInterval(autoScroll)
+
+})
+
+carousel.addEventListener("mouseup",e=>{
+
+isDown=false
+startAutoScroll()
+
+})
+
+carousel.addEventListener("mousemove",e=>{
+
+if(!isDown) return
+
+if(e.pageX-startX>50){
+
+index--
+updateCarousel()
+startX=e.pageX
+
+}
+
+if(startX-e.pageX>50){
+
+index++
+updateCarousel()
+startX=e.pageX
+
+}
+
+})
 
 }
 

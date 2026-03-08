@@ -1,21 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="utf-8">
+
 <title>Bookshelf</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 
 body{
 margin:0;
-font-family:sans-serif;
-background:#fafafa;
-padding:40px;
+font-family:"Noto Serif JP", serif;
+background:linear-gradient(180deg,#faf7f2,#f1ece6);
+padding:60px 20px;
 text-align:center;
+color:#3a342e;
 }
 
 h2{
-margin-bottom:30px;
+font-size:28px;
+font-weight:600;
+letter-spacing:2px;
+margin-bottom:40px;
 }
 
 .carousel{
@@ -25,8 +33,8 @@ width:100%;
 
 .track{
 display:flex;
-gap:30px;
-animation:scroll 40s linear infinite;
+gap:36px;
+animation:scroll 45s linear infinite;
 }
 
 .carousel:hover .track{
@@ -39,19 +47,26 @@ transition:transform .4s;
 }
 
 .book img{
-width:140px;
-border-radius:8px;
-box-shadow:0 8px 20px rgba(0,0,0,0.15);
+width:150px;
+border-radius:10px;
+box-shadow:0 15px 35px rgba(0,0,0,0.18);
+transition:transform .3s, box-shadow .3s;
+}
+
+.book:hover img{
+transform:translateY(-8px);
+box-shadow:0 25px 45px rgba(0,0,0,0.25);
 }
 
 .book-title{
-font-size:12px;
-margin-top:8px;
-width:140px;
+font-size:13px;
+margin-top:10px;
+width:150px;
+line-height:1.4;
 }
 
-.book.center{
-transform:scale(1.3);
+.book.center img{
+transform:scale(1.25);
 }
 
 @keyframes scroll{
@@ -69,7 +84,7 @@ transform:translateX(-50%);
 
 <body>
 
-<h2>📚 心を動かした本</h2>
+<h2>心を動かした本</h2>
 
 <div class="carousel">
 <div class="track" id="track"></div>

@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2113.65">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Hiragino Sans'}
+    span.s1 {font: 12.0px Helvetica}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;style&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">body{</p>
+<p class="p1">margin:0;</p>
+<p class="p1">background:transparent;</p>
+<p class="p1">overflow:hidden;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">.slider{</p>
+<p class="p1">width:100%;</p>
+<p class="p1">overflow:hidden;</p>
+<p class="p1">padding:20px 0;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">.slider-track{</p>
+<p class="p1">display:flex;</p>
+<p class="p1">gap:20px;</p>
+<p class="p1">transition:transform 0.8s ease;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">.book{</p>
+<p class="p1">flex:0 0 auto;</p>
+<p class="p1">transition:transform .4s;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">.book img{</p>
+<p class="p1">height:170px;</p>
+<p class="p1">border-radius:8px;</p>
+<p class="p1">box-shadow:0 10px 20px rgba(0,0,0,0.2);</p>
+<p class="p1">transition:transform .4s, box-shadow .4s;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">.book img:hover{</p>
+<p class="p1">transform:scale(1.12);</p>
+<p class="p1">box-shadow:0 14px 28px rgba(0,0,0,0.3);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/style&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="slider" id="slider"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="slider-track" id="track"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="book"&gt;&lt;img src="https://m.media-amazon.com/images/I/71vZyD1LoyL._SL1200_.jpg"&gt;&lt;/div&gt;</p>
+<p class="p1">&lt;div class="book"&gt;&lt;img src="<a href="https://m.media-amazon.com/images/I/41gbfQIk5XL._SL1378_.jpg">41gbfQIk5XL._SL1378_.jpg</a>"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">const track = document.getElementById("track")</p>
+<p class="p1">const slider = document.getElementById("slider")</p>
+<p class="p2"><br></p>
+<p class="p1">let index = 0</p>
+<p class="p2"><br></p>
+<p class="p1">let books = document.querySelectorAll(".book")</p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s1">// </span>無限ループ用に複製</p>
+<p class="p1">books.forEach(book=&gt;{</p>
+<p class="p1">const clone = book.cloneNode(true)</p>
+<p class="p1">track.appendChild(clone)</p>
+<p class="p1">})</p>
+<p class="p2"><br></p>
+<p class="p1">books = document.querySelectorAll(".book")</p>
+<p class="p2"><br></p>
+<p class="p1">function moveSlide(){</p>
+<p class="p2"><br></p>
+<p class="p1">index++</p>
+<p class="p2"><br></p>
+<p class="p1">const bookWidth = books[0].offsetWidth + 20</p>
+<p class="p2"><br></p>
+<p class="p1">track.style.transform =</p>
+<p class="p1">`translateX(-${bookWidth * index}px)`</p>
+<p class="p2"><br></p>
+<p class="p1">if(index &gt;= books.length/2){</p>
+<p class="p2"><br></p>
+<p class="p1">setTimeout(()=&gt;{</p>
+<p class="p1">track.style.transition="none"</p>
+<p class="p1">index=0</p>
+<p class="p1">track.style.transform="translateX(0)"</p>
+<p class="p2"><br></p>
+<p class="p1">setTimeout(()=&gt;{</p>
+<p class="p1">track.style.transition="transform 0.8s ease"</p>
+<p class="p1">},50)</p>
+<p class="p2"><br></p>
+<p class="p1">},800)</p>
+<p class="p2"><br></p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">let auto = setInterval(moveSlide,4000)</p>
+<p class="p2"><br></p>
+<p class="p1">slider.addEventListener("mouseenter",()=&gt;{</p>
+<p class="p1">clearInterval(auto)</p>
+<p class="p1">})</p>
+<p class="p2"><br></p>
+<p class="p1">slider.addEventListener("mouseleave",()=&gt;{</p>
+<p class="p1">auto=setInterval(moveSlide,4000)</p>
+<p class="p1">})</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>

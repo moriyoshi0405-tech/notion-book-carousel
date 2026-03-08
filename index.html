@@ -1,47 +1,31 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<title>My Books</title>
 
 <style>
 
 body{
-margin:0;
-background:transparent;
 font-family:sans-serif;
-overflow:hidden;
+padding:20px;
 }
 
-.slider{
-width:100%;
-overflow:hidden;
-padding:20px 0;
-}
-
-.slider-track{
-display:flex;
-gap:24px;
-transition:transform 0.8s ease;
-}
-
-.book{
-flex:0 0 auto;
+#book-list{
+display:grid;
+grid-template-columns:repeat(auto-fill,120px);
+gap:20px;
 }
 
 .book img{
-height:180px;
-border-radius:10px;
-box-shadow:0 10px 20px rgba(0,0,0,0.2);
-transition:transform .35s, box-shadow .35s;
-cursor:pointer;
+width:120px;
+border-radius:6px;
 }
 
-.book img:hover{
-transform:scale(1.12);
-box-shadow:0 16px 30px rgba(0,0,0,0.3);
+.book-title{
+font-size:12px;
+margin-top:6px;
 }
 
 </style>
@@ -50,109 +34,38 @@ box-shadow:0 16px 30px rgba(0,0,0,0.3);
 
 <body>
 
-<div class="slider" id="slider">
+<h2>本棚</h2>
 
-<div class="slider-track" id="track">
-
-<a class="book" href="https://www.amazon.co.jp/傷を愛せるか-増補新版-ちくま文庫-み-37-1-宮地-尚子/dp/4480438165" target="_blank">
-<img src="https://m.media-amazon.com/images/I/71vZyD1LoyL._SL1200_.jpg">
-</a>
-
-<a class="book" href="https://www.amazon.co.jp/うたうおばけ-講談社文庫-くどう-れいん/dp/4065328772/ref=sr_1_1?__mk_ja_JP=カタカナ&crid=16QSTO243IQNW&dib=eyJ2IjoiMSJ9.5-1QibD0_cgyq0QDSgTqueldE4z94u59C4z4szv73zyIY8IqT77f7UyWMyKJjzHWxIgYNQKZLcMq7_bBImoCoQ.2lYIv55Mq5J4zd1EeUOEDMaDWHq__9uqXYJfO5Zt_Ek&dib_tag=se&keywords=うたうおばけ&qid=1772975571&s=books&sprefix=うたうおばけ%2Cstripbooks%2C194&sr=1-1" target="_blank">
-<img src="https://m.media-amazon.com/images/I/615m1SL9wIL._SL1428_.jpg">
-</a>
-
-<a class="book" href="https://www.amazon.co.jp/虎のたましい人魚の涙-講談社文庫-82-2-くどう-れいん/dp/4065354226/ref=pd_sbs_d_sccl_1_1/356-3057943-4559936?pd_rd_w=2Zhms&content-id=amzn1.sym.d9975236-2c6f-40f8-8a79-8a86a96a4ad2&pf_rd_p=d9975236-2c6f-40f8-8a79-8a86a96a4ad2&pf_rd_r=1ZTGZ9GJE3G6QXA0ENP5&pd_rd_wg=iwCde&pd_rd_r=afd9a79b-8bce-47e5-a5a6-20beab59aaa7&pd_rd_i=4065354226&psc=1" target="_blank">
-<img src="https://m.media-amazon.com/images/I/61HB2U1WHFL._SL1411_.jpg">
-</a>
-
-<a class="book" href="#" target="_blank">
-<img src="BOOK_IMAGE_URL">
-</a>
-
-<a class="book" href="#" target="_blank">
-<img src="BOOK_IMAGE_URL">
-</a>
-
-<a class="book" href="#" target="_blank">
-<img src="BOOK_IMAGE_URL">
-</a>
-
-<a class="book" href="#" target="_blank">
-<img src="BOOK_IMAGE_URL">
-</a>
-
-<a class="book" href="#" target="_blank">
-<img src="BOOK_IMAGE_URL">
-</a>
-
-<a class="book" href="#" target="_blank">
-<img src="BOOK_IMAGE_URL">
-</a>
-
-<a class="book" href="#" target="_blank">
-<img src="BOOK_IMAGE_URL">
-</a>
-
-</div>
-
-</div>
+<div id="book-list"></div>
 
 <script>
 
-const slider = document.getElementById("slider")
-const track = document.getElementById("track")
+const API_URL = "https://script.google.com/macros/s/AKfycbw8q63nwevVB2noI6Fj_KNJhPvWjLNBKiJEW_IW_oi_8qEQ-a0iLQz11bAIpUy2u7TxVQ/exec";
 
-let books = document.querySelectorAll(".book")
+fetch(API_URL)
+.then(res => res.json())
+.then(books => {
 
-// 無限ループ用複製
-books.forEach(book=>{
-const clone = book.cloneNode(true)
-track.appendChild(clone)
-})
+const container = document.getElementById("book-list");
 
-books = document.querySelectorAll(".book")
+books.forEach(book => {
 
-let index = 0
+const div = document.createElement("div");
+div.className = "book";
 
-function moveSlide(){
+div.innerHTML = `
+<img src="${book.cover}">
+<div class="book-title">${book.title}</div>
+`;
 
-index++
+container.appendChild(div);
 
-const width = books[0].offsetWidth + 24
+});
 
-track.style.transform =
-`translateX(-${width * index}px)`
-
-if(index >= books.length/2){
-
-setTimeout(()=>{
-
-track.style.transition="none"
-index=0
-track.style.transform="translateX(0)"
-
-setTimeout(()=>{
-track.style.transition="transform 0.8s ease"
-},50)
-
-},800)
-
-}
-
-}
-
-let auto = setInterval(moveSlide,4000)
-
-slider.addEventListener("mouseenter",()=>{
-clearInterval(auto)
-})
-
-slider.addEventListener("mouseleave",()=>{
-auto=setInterval(moveSlide,4000)
-})
+});
 
 </script>
 
 </body>
+
 </html>

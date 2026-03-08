@@ -13,15 +13,15 @@ body{
 margin:0;
 font-family:"Noto Serif JP",serif;
 background:#f3eee7;
-padding:80px 20px;
+padding:60px 10px;
 text-align:center;
 color:#3b352f;
 }
 
 h2{
-font-size:30px;
+font-size:28px;
 letter-spacing:3px;
-margin-bottom:60px;
+margin-bottom:50px;
 }
 
 .carousel{
@@ -31,105 +31,92 @@ width:100%;
 padding-bottom:40px;
 }
 
-/* 木の棚 */
-
 .shelf{
-
 position:absolute;
 bottom:0;
 left:0;
-
 width:100%;
 height:18px;
-
-background:linear-gradient(
-90deg,
-#8b5e3c,
-#a87348,
-#8b5e3c
-);
-
+background:linear-gradient(90deg,#8b5e3c,#a87348,#8b5e3c);
 border-radius:4px;
-
 box-shadow:
 0 6px 10px rgba(0,0,0,0.25),
 inset 0 2px 3px rgba(255,255,255,0.3);
-
 }
-
-/* カルーセル */
 
 .track{
 display:flex;
-gap:40px;
+gap:30px;
 transition:transform .6s ease;
 align-items:flex-end;
 }
 
 .book{
 flex:0 0 auto;
-width:170px;
+width:160px;
 text-align:center;
 transition:transform .5s;
 }
 
 .book img{
-width:170px;
+width:100%;
 border-radius:6px;
-
-box-shadow:
-0 15px 25px rgba(0,0,0,0.25);
-
+box-shadow:0 15px 25px rgba(0,0,0,0.25);
 transition:transform .5s;
-}
-
-/* 本の影（棚っぽく） */
-
-.book img::after{
-content:"";
 }
 
 .book-title{
 font-size:14px;
-margin-top:12px;
+margin-top:10px;
 line-height:1.4;
 min-height:40px;
 }
 
 .read-btn{
-
 display:inline-block;
-margin-top:10px;
+margin-top:8px;
 padding:6px 14px;
-
 font-size:12px;
-
 background:#7a5c3e;
 color:white;
-
 text-decoration:none;
-
 border-radius:20px;
-
 transition:.25s;
-
 }
 
 .read-btn:hover{
-
 background:#5c432b;
 transform:translateY(-2px);
+}
+
+.book.center img{
+transform:scale(1.25);
+box-shadow:0 25px 40px rgba(0,0,0,0.35);
+}
+
+/* ---------- レスポンシブ ---------- */
+
+@media (max-width:900px){
+
+.book{
+width:130px;
+}
 
 }
 
-/* 中央拡大 */
+@media (max-width:600px){
 
-.book.center img{
+.book{
+width:100px;
+}
 
-transform:scale(1.25);
+h2{
+font-size:22px;
+}
 
-box-shadow:
-0 25px 40px rgba(0,0,0,0.35);
+.book-title{
+font-size:12px;
+}
 
 }
 
@@ -194,11 +181,19 @@ enableDrag()
 
 })
 
+function getBookWidth(){
+
+const book=document.querySelector(".book")
+
+return book.offsetWidth + 30
+
+}
+
 function updateCarousel(){
 
 const track=document.getElementById("track")
 
-const bookWidth=210
+const bookWidth=getBookWidth()
 
 track.style.transform=`translateX(${-index*bookWidth}px)`
 
@@ -246,6 +241,13 @@ startAutoScroll()
 
 })
 
+carousel.addEventListener("mouseleave",()=>{
+
+isDown=false
+startAutoScroll()
+
+})
+
 carousel.addEventListener("mousemove",e=>{
 
 if(!isDown) return
@@ -268,7 +270,40 @@ startX=e.pageX
 
 })
 
+/* スマホスワイプ */
+
+carousel.addEventListener("touchstart",e=>{
+
+startX=e.touches[0].pageX
+clearInterval(autoScroll)
+
+})
+
+carousel.addEventListener("touchend",e=>{
+
+const endX=e.changedTouches[0].pageX
+
+if(endX-startX>50){
+
+index--
+updateCarousel()
+
 }
+
+if(startX-endX>50){
+
+index++
+updateCarousel()
+
+}
+
+startAutoScroll()
+
+})
+
+}
+
+window.addEventListener("resize",updateCarousel)
 
 </script>
 

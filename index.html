@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="utf-8">
-<title>Library</title>
+<title>Book Shelf</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet">
 
@@ -12,140 +13,142 @@
 body{
 margin:0;
 font-family:"Noto Serif JP",serif;
-background:#f3eee7;
-padding:60px 10px;
+background:linear-gradient(180deg,#f7f5f1,#ece7df);
+color:#333;
 text-align:center;
-color:#3b352f;
 }
 
-h2{
-font-size:28px;
-letter-spacing:3px;
-margin-bottom:50px;
+/* タイトル */
+
+.title{
+font-size:32px;
+margin-top:60px;
+margin-bottom:40px;
+letter-spacing:2px;
 }
+
+/* カルーセルエリア */
 
 .carousel{
-position:relative;
-overflow:visible;
 width:100%;
-padding-bottom:40px;
+overflow:hidden;
+position:relative;
 }
 
-.shelf{
-position:absolute;
-bottom:0;
-left:0;
-width:100%;
-height:18px;
-background:linear-gradient(90deg,#8b5e3c,#a87348,#8b5e3c);
-border-radius:4px;
-box-shadow:
-0 6px 10px rgba(0,0,0,0.25),
-inset 0 2px 3px rgba(255,255,255,0.3);
-}
+/* 本トラック */
 
 .track{
 display:flex;
-gap:30px;
-transition:transform .6s ease;
+gap:40px;
+transition:transform .6s cubic-bezier(.4,0,.2,1);
 align-items:flex-end;
 }
 
+/* 本 */
+
 .book{
-flex:0 0 auto;
 width:160px;
-text-align:center;
-transition:transform .5s;
+transition:transform .4s;
+flex-shrink:0;
 }
 
 .book img{
-width:100%;
-border-radius:6px;
-box-shadow:0 15px 25px rgba(0,0,0,0.25);
-transition:transform .5s;
+width:160px;
+height:240px;
+object-fit:contain;
+border-radius:10px;
+box-shadow:0 8px 20px rgba(0,0,0,.15);
+background:white;
 }
 
-.book-title{
-font-size:14px;
-margin-top:10px;
-line-height:1.4;
-min-height:40px;
+/* 中央 */
+
+.book.center{
+transform:scale(1.25);
 }
+
+/* タイトル */
+
+.book-title{
+margin-top:10px;
+font-size:14px;
+line-height:1.4;
+height:40px;
+overflow:hidden;
+}
+
+/* ボタン */
 
 .read-btn{
 display:inline-block;
 margin-top:8px;
 padding:6px 14px;
-font-size:12px;
-background:#7a5c3e;
+font-size:13px;
+background:#333;
 color:white;
-text-decoration:none;
 border-radius:20px;
-transition:.25s;
+text-decoration:none;
+transition:.3s;
 }
 
 .read-btn:hover{
-background:#5c432b;
-transform:translateY(-2px);
+background:#666;
 }
 
-.book.center img{
-transform:scale(1.25);
-box-shadow:0 25px 40px rgba(0,0,0,0.35);
-}
+/* レスポンシブ */
 
-/* ---------- レスポンシブ ---------- */
-
-@media (max-width:900px){
+@media(max-width:900px){
 
 .book{
 width:130px;
 }
 
+.book img{
+width:130px;
+height:200px;
 }
 
-@media (max-width:600px){
+}
+
+@media(max-width:600px){
+
+.title{
+font-size:24px;
+}
 
 .book{
-width:100px;
+width:110px;
 }
 
-h2{
-font-size:22px;
-}
-
-.book-title{
-font-size:12px;
+.book img{
+width:110px;
+height:170px;
 }
 
 }
 
 </style>
-
 </head>
+
 
 <body>
 
-<h2>心を動かした本たち</h2>
+<div class="title">おすすめの本</div>
 
 <div class="carousel">
-
 <div class="track" id="track"></div>
-
-<div class="shelf"></div>
-
 </div>
+
 
 <script>
 
-const API_URL="https://script.google.com/macros/s/AKfycbw8q63nwevVB2noI6Fj_KNJhPvWjLNBKiJEW_IW_oi_8qEQ-a0iLQz11bAIpUy2u7TxVQ/exec"
+const GAS_URL="https://script.google.com/macros/s/AKfycbw8q63nwevVB2noI6Fj_KNJhPvWjLNBKiJEW_IW_oi_8qEQ-a0iLQz11bAIpUy2u7TxVQ/exec"
 
-let books=[]
 let index=0
-let autoScroll
+let books=[]
 
-fetch(API_URL)
-.then(res=>res.json())
+fetch(GAS_URL)
+.then(r=>r.json())
 .then(data=>{
 
 books=[...data,...data,...data]
@@ -159,13 +162,13 @@ div.className="book"
 
 div.innerHTML=`
 
-<a href="${book.notion}" target="_blank">
-<img src="${book.cover}">
-</a>
+<img src="${book.image}">
 
-<div class="book-title">${book.title}</div>
+<div class="book-title">
+${book.title}
+</div>
 
-<a class="read-btn" href="${book.amazon}" target="_blank">
+<a class="read-btn" href="${book.url || '#'}" target="_blank">
 読む
 </a>
 
@@ -176,134 +179,35 @@ track.appendChild(div)
 })
 
 updateCarousel()
-startAutoScroll()
-enableDrag()
+
+setInterval(()=>{
+index++
+updateCarousel()
+},2500)
 
 })
 
-function getBookWidth(){
-
-const book=document.querySelector(".book")
-
-return book.offsetWidth + 30
-
-}
 
 function updateCarousel(){
 
 const track=document.getElementById("track")
+const first=document.querySelector(".book")
 
-const bookWidth=getBookWidth()
+if(!first) return
 
-track.style.transform=`translateX(${-index*bookWidth}px)`
+const width=first.offsetWidth+40
 
-const items=document.querySelectorAll(".book")
+track.style.transform=`translateX(${-index*width}px)`
 
-items.forEach(i=>i.classList.remove("center"))
+document.querySelectorAll(".book").forEach(b=>b.classList.remove("center"))
 
 const center=index+2
 
-if(items[center]) items[center].classList.add("center")
+const books=document.querySelectorAll(".book")
+
+if(books[center]) books[center].classList.add("center")
 
 }
-
-function startAutoScroll(){
-
-autoScroll=setInterval(()=>{
-
-index++
-
-updateCarousel()
-
-},2500)
-
-}
-
-function enableDrag(){
-
-let startX
-let isDown=false
-
-const carousel=document.querySelector(".carousel")
-
-carousel.addEventListener("mousedown",e=>{
-
-isDown=true
-startX=e.pageX
-clearInterval(autoScroll)
-
-})
-
-carousel.addEventListener("mouseup",()=>{
-
-isDown=false
-startAutoScroll()
-
-})
-
-carousel.addEventListener("mouseleave",()=>{
-
-isDown=false
-startAutoScroll()
-
-})
-
-carousel.addEventListener("mousemove",e=>{
-
-if(!isDown) return
-
-if(e.pageX-startX>50){
-
-index--
-updateCarousel()
-startX=e.pageX
-
-}
-
-if(startX-e.pageX>50){
-
-index++
-updateCarousel()
-startX=e.pageX
-
-}
-
-})
-
-/* スマホスワイプ */
-
-carousel.addEventListener("touchstart",e=>{
-
-startX=e.touches[0].pageX
-clearInterval(autoScroll)
-
-})
-
-carousel.addEventListener("touchend",e=>{
-
-const endX=e.changedTouches[0].pageX
-
-if(endX-startX>50){
-
-index--
-updateCarousel()
-
-}
-
-if(startX-endX>50){
-
-index++
-updateCarousel()
-
-}
-
-startAutoScroll()
-
-})
-
-}
-
-window.addEventListener("resize",updateCarousel)
 
 </script>
 

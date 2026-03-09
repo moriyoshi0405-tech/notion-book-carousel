@@ -13,10 +13,10 @@
 body{
 margin:0;
 font-family:"Noto Serif JP",serif;
-color:#fff;
+background:#111;
+color:white;
 text-align:center;
 overflow-x:hidden;
-background:#111;
 }
 
 /* 図書館背景 */
@@ -30,45 +30,20 @@ width:100%;
 height:100%;
 
 background:
-linear-gradient(rgba(0,0,0,0.65),rgba(0,0,0,0.9)),
+linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.9)),
 url("https://images.unsplash.com/photo-1507842217343-583bb7270b66");
 
 background-size:cover;
 background-position:center;
 
-z-index:-3;
-}
-
-/* 浮遊ダスト */
-
-body::after{
-content:"";
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-
-background-image:
-radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
-
-background-size:90px 90px;
-
-animation:dust 60s linear infinite;
-
 z-index:-2;
-}
-
-@keyframes dust{
-0%{transform:translateY(0)}
-100%{transform:translateY(-800px)}
 }
 
 /* タイトル */
 
 .title{
-font-size:36px;
-margin:30px 0;
+font-size:34px;
+margin:40px 0;
 letter-spacing:4px;
 color:#f5e6c8;
 text-shadow:0 0 15px rgba(255,210,120,.6);
@@ -77,14 +52,12 @@ text-shadow:0 0 15px rgba(255,210,120,.6);
 /* カルーセル */
 
 .carousel{
-width:100%;
-overflow:visible;
 position:relative;
-padding-top:80px;
-padding-bottom:220px;
+overflow:visible;
+padding:80px 0 200px;
 }
 
-/* 図書館ランプ */
+/* ランプ */
 
 .lamp{
 position:absolute;
@@ -103,13 +76,12 @@ position:absolute;
 top:40px;
 left:50%;
 transform:translateX(-50%);
-width:320px;
-height:220px;
+width:300px;
+height:200px;
 
-background:
-radial-gradient(
+background:radial-gradient(
 ellipse at center,
-rgba(255,210,120,.25),
+rgba(255,210,120,.3),
 transparent 70%
 );
 }
@@ -128,8 +100,7 @@ background:url("https://images.unsplash.com/photo-1601083748886-6a1f86b531db");
 
 background-size:cover;
 
-box-shadow:
-inset 0 10px 20px rgba(0,0,0,.5);
+box-shadow:inset 0 10px 20px rgba(0,0,0,.6);
 
 border-radius:30px 30px 0 0;
 }
@@ -139,9 +110,11 @@ border-radius:30px 30px 0 0;
 .track{
 display:flex;
 gap:40px;
-transition:transform .6s cubic-bezier(.4,0,.2,1);
 align-items:flex-end;
-padding:0 20px;
+
+transition:transform .6s cubic-bezier(.4,0,.2,1);
+
+will-change:transform;
 }
 
 /* 本 */
@@ -149,24 +122,24 @@ padding:0 20px;
 .book{
 width:140px;
 flex-shrink:0;
-cursor:pointer;
+
 display:flex;
 flex-direction:column;
 align-items:center;
 
-transition:transform .45s cubic-bezier(.4,0,.2,1);
+transition:transform .4s, filter .4s;
 
 transform-origin:bottom center;
-position:relative;
+cursor:pointer;
 }
 
-/* 本の揺れ */
+/* 本揺れ */
 
 .book-inner{
-animation:bookSwing 6s ease-in-out infinite;
+animation:swing 6s ease-in-out infinite;
 }
 
-@keyframes bookSwing{
+@keyframes swing{
 0%{transform:rotate(-0.6deg)}
 50%{transform:rotate(0.6deg)}
 100%{transform:rotate(-0.6deg)}
@@ -179,18 +152,18 @@ width:140px;
 height:210px;
 object-fit:contain;
 border-radius:10px;
-box-shadow:0 12px 30px rgba(0,0,0,.7);
 background:white;
+box-shadow:0 12px 30px rgba(0,0,0,.7);
 }
 
-/* 本が開く */
+/* 本開く */
 
 .book.open img{
-animation:openBook .6s forwards;
+animation:open .6s forwards;
 }
 
-@keyframes openBook{
-0%{transform:rotateY(0deg)}
+@keyframes open{
+0%{transform:rotateY(0)}
 100%{transform:rotateY(-120deg)}
 }
 
@@ -198,7 +171,7 @@ animation:openBook .6s forwards;
 
 .book.center{
 transform:scale(1.35);
-z-index:5;
+z-index:10;
 }
 
 /* 周囲 */
@@ -211,7 +184,7 @@ opacity:.6;
 /* タイトル */
 
 .book-title{
-margin-top:8px;
+margin-top:10px;
 font-size:14px;
 height:36px;
 color:#f5e6c8;
@@ -220,7 +193,6 @@ color:#f5e6c8;
 /* ボタン */
 
 .read-btn{
-display:inline-block;
 margin-top:6px;
 padding:6px 14px;
 font-size:13px;
@@ -233,32 +205,6 @@ transition:.3s;
 
 .read-btn:hover{
 background:#8a6d4d;
-}
-
-/* レスポンシブ */
-
-@media(max-width:900px){
-
-.book{width:120px;}
-
-.book img{
-width:120px;
-height:180px;
-}
-
-}
-
-@media(max-width:600px){
-
-.title{font-size:26px;}
-
-.book{width:100px;}
-
-.book img{
-width:100px;
-height:150px;
-}
-
 }
 
 </style>
@@ -301,13 +247,10 @@ div.className="book"
 div.innerHTML=`
 
 <div class="book-inner">
-
 <img src="${book.cover}">
-
 </div>
 
 <div class="book-title">${book.title}</div>
-
 <a class="read-btn" href="${book.amazon}" target="_blank">読む</a>
 
 `
@@ -319,9 +262,7 @@ if(e.target.tagName==="A") return
 div.classList.add("open")
 
 setTimeout(()=>{
-
 window.open(book.notion,"_blank")
-
 },500)
 
 })
@@ -342,23 +283,18 @@ updateCarousel()
 function updateCarousel(){
 
 const track=document.getElementById("track")
-
-const first=document.querySelector(".book")
-
-if(!first) return
-
-const width=first.offsetWidth+40
-
-track.style.transform=`translateX(${-index*width}px)`
-
-document.querySelectorAll(".book").forEach(b=>b.classList.remove("center"))
-
 const books=document.querySelectorAll(".book")
 
-const center=Math.floor(books.length/2)
+if(!books.length) return
 
-if(books[index+center]){
-books[index+center].classList.add("center")
+const width=books[0].offsetWidth + 40
+
+track.style.transform=`translateX(calc(50% - ${(index*width)+(width/2)}px))`
+
+books.forEach(b=>b.classList.remove("center"))
+
+if(books[index]){
+books[index].classList.add("center")
 }
 
 }

@@ -15,9 +15,11 @@ fetch(GAS_URL)
 
 originalLength=data.length
 
-/* 配列を3倍にして無限化 */
+/* 無限用に3倍 */
 
 books=[...data,...data,...data]
+
+/* 中央から開始 */
 
 index=originalLength
 
@@ -37,7 +39,6 @@ div.innerHTML=`
 </div>
 
 <div class="book-title">${book.title}</div>
-
 <a class="read-btn" href="${book.amazon}" target="_blank">読む</a>
 
 `
@@ -60,54 +61,44 @@ track.appendChild(div)
 
 updateCarousel()
 
-/* 自動スクロール */
+/* 自動スライド */
 
 setInterval(()=>{
-
 index++
 updateCarousel()
-
 },2500)
 
-/* スワイプ操作 */
+/* スワイプ */
 
 const carousel=document.querySelector(".carousel")
 
 carousel.addEventListener("touchstart",e=>{
-
 startX=e.touches[0].clientX
 isDragging=true
-
 })
 
 carousel.addEventListener("touchmove",e=>{
 
 if(!isDragging) return
 
-const moveX=e.touches[0].clientX-startX
+const diff=e.touches[0].clientX-startX
 
-if(moveX>60){
-
+if(diff>60){
 index--
 updateCarousel()
 isDragging=false
-
 }
 
-if(moveX<-60){
-
+if(diff<-60){
 index++
 updateCarousel()
 isDragging=false
-
 }
 
 })
 
 carousel.addEventListener("touchend",()=>{
-
 isDragging=false
-
 })
 
 })
@@ -121,28 +112,25 @@ if(!booksDOM.length) return
 
 const width=booksDOM[0].offsetWidth+40
 
-track.style.transform=`translateX(calc(50% - ${(index*width)+(width/2)}px))`
+/* 中央配置 */
+
+track.style.transform=
+`translateX(calc(50% - ${(index*width)+(width/2)}px))`
 
 booksDOM.forEach(b=>b.classList.remove("center"))
 
 if(booksDOM[index]){
-
 booksDOM[index].classList.add("center")
-
 }
 
-/* 無限ループ補正 */
+/* 無限補正 */
 
 if(index>=originalLength*2){
-
 index=originalLength
-
 }
 
 if(index<originalLength){
-
 index=originalLength*2-1
-
 }
 
 }

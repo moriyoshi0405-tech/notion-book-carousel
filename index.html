@@ -1,11 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Book Shelf</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+margin:0;
+font-family:"Noto Serif JP",serif;
+background:#111;
+color:white;
+text-align:center;
+overflow-x:hidden;
+}
+
+/* 図書館背景 */
+
+body::before{
+content:"";
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+
+background:
+linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.9)),
+url("https://images.unsplash.com/photo-1507842217343-583bb7270b66");
+
+background-size:cover;
+background-position:center;
+
+z-index:-2;
+}
+
+.title{
+font-size:34px;
+margin:40px 0;
+letter-spacing:4px;
+color:#f5e6c8;
+text-shadow:0 0 15px rgba(255,210,120,.6);
+}
+
+.carousel{
+position:relative;
+overflow:hidden;
+padding:80px 0 120px;
+}
+
+.track{
+display:flex;
+gap:40px;
+transition:transform .6s cubic-bezier(.4,0,.2,1);
+align-items:flex-end;
+}
+
+.book{
+width:140px;
+flex-shrink:0;
+cursor:pointer;
+
+display:flex;
+flex-direction:column;
+align-items:center;
+
+transition:transform .4s, filter .4s;
+transform-origin:bottom center;
+}
+
+.book-inner{
+animation:swing 6s ease-in-out infinite;
+}
+
+@keyframes swing{
+0%{transform:rotate(-0.6deg)}
+50%{transform:rotate(0.6deg)}
+100%{transform:rotate(-0.6deg)}
+}
+
+.book img{
+width:140px;
+height:210px;
+object-fit:contain;
+border-radius:10px;
+background:white;
+box-shadow:0 12px 30px rgba(0,0,0,.7);
+}
+
+.book.center{
+transform:scale(1.35);
+z-index:10;
+}
+
+.book:not(.center){
+filter:blur(2px) brightness(.6);
+opacity:.6;
+}
+
+.book-title{
+margin-top:10px;
+font-size:14px;
+height:36px;
+color:#f5e6c8;
+}
+
+.read-btn{
+margin-top:6px;
+padding:6px 14px;
+font-size:13px;
+background:#5a4632;
+color:white;
+border-radius:20px;
+text-decoration:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="title">おすすめの本</div>
+
+<div class="carousel">
+<div class="track" id="track"></div>
+</div>
+
 <script>
 
 const GAS_URL="https://script.google.com/macros/s/AKfycbw8q63nwevVB2noI6Fj_KNJhPvWjLNBKiJEW_IW_oi_8qEQ-a0iLQz11bAIpUy2u7TxVQ/exec"
 
-let index=0
 let books=[]
-let originalLength=0
-
+let index=0
 let startX=0
 let isDragging=false
 
@@ -13,21 +143,24 @@ fetch(GAS_URL)
 .then(res=>res.json())
 .then(data=>{
 
-originalLength=data.length
+/* データが無い場合の保険 */
 
-/* 無限用に3倍 */
+if(!Array.isArray(data) || data.length===0){
+console.log("no data")
+return
+}
 
-books=[...data,...data,...data]
+/* 無限ループ用に5倍 */
 
-/* 中央から開始 */
+books=[...data,...data,...data,...data,...data]
 
-index=originalLength
+index=Math.floor(books.length/2)
 
 const track=document.getElementById("track")
 
 books.forEach(book=>{
 
-if(!book.cover) return
+const cover=book.cover || book.image || ""
 
 const div=document.createElement("div")
 div.className="book"
@@ -35,11 +168,12 @@ div.className="book"
 div.innerHTML=`
 
 <div class="book-inner">
-<img src="${book.cover}">
+<img src="${cover}">
 </div>
 
-<div class="book-title">${book.title}</div>
-<a class="read-btn" href="${book.amazon}" target="_blank">読む</a>
+<div class="book-title">${book.title || ""}</div>
+
+<a class="read-btn" href="${book.amazon || "#"}" target="_blank">読む</a>
 
 `
 
@@ -47,11 +181,9 @@ div.addEventListener("click",e=>{
 
 if(e.target.tagName==="A") return
 
-div.classList.add("open")
-
-setTimeout(()=>{
+if(book.notion){
 window.open(book.notion,"_blank")
-},500)
+}
 
 })
 
@@ -61,7 +193,7 @@ track.appendChild(div)
 
 updateCarousel()
 
-/* 自動スライド */
+/* 自動スクロール */
 
 setInterval(()=>{
 index++
@@ -112,8 +244,6 @@ if(!booksDOM.length) return
 
 const width=booksDOM[0].offsetWidth+40
 
-/* 中央配置 */
-
 track.style.transform=
 `translateX(calc(50% - ${(index*width)+(width/2)}px))`
 
@@ -125,14 +255,17 @@ booksDOM[index].classList.add("center")
 
 /* 無限補正 */
 
-if(index>=originalLength*2){
-index=originalLength
+if(index>booksDOM.length-10){
+index=Math.floor(booksDOM.length/2)
 }
 
-if(index<originalLength){
-index=originalLength*2-1
+if(index<10){
+index=Math.floor(booksDOM.length/2)
 }
 
 }
 
 </script>
+
+</body>
+</html>

@@ -8,6 +8,15 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet">
 
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2DG0CZ67MQ"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-2DG0CZ67MQ');
+</script>
+
 <style>
 
 body{
@@ -49,8 +58,6 @@ text-shadow:0 0 15px rgba(255,210,120,.6);
 .carousel{
 position:relative;
 overflow:hidden;
-
-/* 上余白を増やして拡大時に見切れないように */
 padding:120px 0 100px;
 }
 
@@ -67,11 +74,9 @@ align-items:flex-end;
 width:140px;
 flex-shrink:0;
 cursor:pointer;
-
 display:flex;
 flex-direction:column;
 align-items:center;
-
 transition:transform .4s, filter .4s;
 transform-origin:bottom center;
 }
@@ -139,6 +144,28 @@ transition:.3s;
 background:#7b6249;
 }
 
+/* 人気ランキング */
+
+.ranking{
+margin-top:80px;
+}
+
+.ranking h2{
+font-size:20px;
+color:#f5e6c8;
+margin-bottom:10px;
+}
+
+.ranking ul{
+list-style:none;
+padding:0;
+}
+
+.ranking li{
+margin:6px 0;
+font-size:14px;
+}
+
 </style>
 </head>
 
@@ -148,6 +175,11 @@ background:#7b6249;
 
 <div class="carousel">
 <div class="track" id="track"></div>
+</div>
+
+<div class="ranking">
+<h2>人気の本</h2>
+<ul id="rankingList"></ul>
 </div>
 
 <script>
@@ -167,8 +199,6 @@ if(!Array.isArray(data) || data.length===0){
 console.log("no data")
 return
 }
-
-/* 無限カルーセル */
 
 books=[...data,...data,...data,...data,...data]
 
@@ -191,7 +221,10 @@ div.innerHTML=`
 
 <div class="book-title">${book.title || ""}</div>
 
-<a class="read-btn" href="${book.amazon || "#"}" target="_blank">読む</a>
+<a class="read-btn" 
+href="${book.amazon || "#"}" 
+target="_blank"
+onclick="trackBookClick('${book.title}')">読む</a>
 
 `
 
@@ -200,7 +233,11 @@ div.addEventListener("click",e=>{
 if(e.target.tagName==="A") return
 
 if(book.notion){
+
+trackArticleClick(book.title)
+
 window.open(book.notion,"_blank")
+
 }
 
 })
@@ -211,14 +248,10 @@ track.appendChild(div)
 
 updateCarousel()
 
-/* 自動スクロール */
-
 setInterval(()=>{
 index++
 updateCarousel()
 },2500)
-
-/* スワイプ */
 
 const carousel=document.querySelector(".carousel")
 
@@ -271,8 +304,6 @@ if(booksDOM[index]){
 booksDOM[index].classList.add("center")
 }
 
-/* 無限補正 */
-
 if(index>booksDOM.length-10){
 index=Math.floor(booksDOM.length/2)
 }
@@ -282,6 +313,70 @@ index=Math.floor(booksDOM.length/2)
 }
 
 }
+
+/* ===== Analyticsイベント ===== */
+
+function trackBookClick(title){
+
+gtag('event','book_click',{
+book_title:title
+})
+
+saveRanking(title)
+
+}
+
+function trackArticleClick(title){
+
+gtag('event','article_open',{
+book_title:title
+})
+
+saveRanking(title)
+
+}
+
+/* ===== 人気ランキング ===== */
+
+function saveRanking(title){
+
+let ranking=JSON.parse(localStorage.getItem("bookRanking"))||{}
+
+if(!ranking[title]){
+ranking[title]=0
+}
+
+ranking[title]++
+
+localStorage.setItem("bookRanking",JSON.stringify(ranking))
+
+updateRanking()
+
+}
+
+function updateRanking(){
+
+const ranking=JSON.parse(localStorage.getItem("bookRanking"))||{}
+
+const sorted=Object.entries(ranking).sort((a,b)=>b[1]-a[1])
+
+const list=document.getElementById("rankingList")
+
+list.innerHTML=""
+
+sorted.slice(0,5).forEach(([title,count])=>{
+
+const li=document.createElement("li")
+
+li.textContent=`${title}（${count}クリック）`
+
+list.appendChild(li)
+
+})
+
+}
+
+updateRanking()
 
 </script>
 

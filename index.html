@@ -1,462 +1,358 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet">
+<title>読書カルーセル</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500;700&display=swap" rel="stylesheet">
 
 <style>
 
 body{
 margin:0;
-font-family:"Noto Serif JP",serif;
-background:#f4f1ea;
-overflow:hidden;
+font-family:'Noto Serif JP',serif;
+background:#0f0f0f;
+color:white;
+overflow-x:hidden;
 }
 
-/* レビュー */
+/* タイトル */
 
-.review-box{
-
-position:absolute;
-top:40px;
-left:50%;
-transform:translateX(-50%);
-
-width:340px;
-
-background:rgba(255,255,255,.92);
-backdrop-filter:blur(10px);
-
-padding:20px;
-
-border-radius:16px;
-
-box-shadow:0 10px 30px rgba(0,0,0,.2);
-
-opacity:0;
-transition:.4s;
-
-}
-
-.review-box.show{
-opacity:1;
-}
-
-.review-title{
-font-size:18px;
-margin-bottom:5px;
-}
-
-.review-rating{
-color:#d4a017;
-margin-bottom:10px;
-}
-
-.review-text{
-font-size:14px;
-line-height:1.7;
-margin-bottom:10px;
-}
-
-.review-link{
-font-size:13px;
-text-decoration:none;
-border-bottom:1px solid #333;
-color:#333;
+.header{
+text-align:center;
+padding:30px 20px 10px 20px;
+font-size:28px;
+letter-spacing:2px;
+position:sticky;
+top:0;
+background:linear-gradient(#0f0f0f,#0f0f0f00);
+z-index:10;
 }
 
 /* カルーセル */
 
+.carousel-wrapper{
+overflow:hidden;
+position:relative;
+padding:10px 0 30px 0;
+}
+
 .carousel{
-
-width:100%;
-height:100vh;
-
 display:flex;
 align-items:flex-end;
-
-overflow:hidden;
-
-position:relative;
-
-}
-
-/* 木棚 */
-
-.carousel::after{
-
-content:"";
-
-position:absolute;
-
-bottom:0;
-left:0;
-
-width:100%;
-height:90px;
-
-background:url("https://images.unsplash.com/photo-1601083748886-6a1f86b531db?auto=format&fit=crop&w=1200&q=80");
-
-background-size:cover;
-
-box-shadow:inset 0 6px 10px rgba(0,0,0,.25);
-
-}
-
-/* トラック */
-
-.track{
-
-display:flex;
-
 gap:40px;
-
-padding:0 40px 100px;
-
-transition:transform .6s cubic-bezier(.4,0,.2,1);
-
+transition:transform 0.6s cubic-bezier(.25,.8,.25,1);
 }
 
 /* 本 */
 
 .book{
-
-width:140px;
-
-flex-shrink:0;
-
-display:flex;
-flex-direction:column;
-align-items:center;
-
-cursor:pointer;
-
-transition:.4s;
-
+flex:0 0 auto;
+width:160px;
+transition:all .4s;
+text-align:center;
+position:relative;
 }
 
 .book img{
-
-width:140px;
-height:210px;
-
+width:100%;
+height:240px;
 object-fit:contain;
-
-border-radius:8px;
-
-background:white;
-
-box-shadow:0 8px 18px rgba(0,0,0,.18);
-
+border-radius:6px;
+box-shadow:0 10px 25px rgba(0,0,0,0.6);
 }
 
-/* 中央本 */
+/* 中央拡大 */
 
 .book.center{
-
-transform:scale(1.35);
-
-filter:blur(0);
-
-z-index:2;
-
+transform:scale(1.3);
+z-index:3;
 }
 
-.book:not(.center){
-
-filter:blur(2px);
-
-opacity:.6;
-
+.book.center img{
+box-shadow:0 20px 50px rgba(0,0,0,0.9);
 }
 
-/* タイトル */
+/* 星 */
 
-.book-title{
-
+.stars{
 margin-top:8px;
-
-font-size:13px;
-
-text-align:center;
-
-line-height:1.4;
-
+font-size:18px;
+color:#f7c948;
 }
 
 /* ボタン */
 
-.read-btn{
-
-margin-top:6px;
-
+.btn{
+margin-top:8px;
+display:inline-block;
 padding:6px 14px;
-
-background:#333;
-
-color:white;
-
 border-radius:20px;
-
-font-size:12px;
-
+background:#ffffff20;
+backdrop-filter:blur(6px);
+color:white;
+font-size:13px;
 text-decoration:none;
-
+transition:.2s;
 }
 
-.read-btn:hover{
-background:#555;
+.btn:hover{
+background:#ffffff40;
 }
 
-/* スマホ */
+/* ポップアップ */
 
-@media(max-width:700px){
+.popup{
+position:absolute;
+bottom:260px;
+left:50%;
+transform:translateX(-50%);
+width:220px;
+background:#1e1e1e;
+padding:12px;
+border-radius:10px;
+font-size:13px;
+opacity:0;
+pointer-events:none;
+transition:.3s;
+box-shadow:0 10px 40px rgba(0,0,0,0.7);
+}
+
+.book:hover .popup{
+opacity:1;
+}
+
+/* レビュー */
+
+.review{
+text-align:center;
+padding:10px 20px 40px 20px;
+max-width:700px;
+margin:auto;
+}
+
+.review h2{
+font-weight:500;
+margin-bottom:6px;
+}
+
+.review p{
+opacity:.8;
+line-height:1.7;
+}
+
+/* 本棚風ライン */
+
+.shelf{
+height:8px;
+background:linear-gradient(
+90deg,
+#3a2b1a,
+#6b4c2b,
+#3a2b1a
+);
+margin-top:10px;
+}
+
+@media(max-width:600px){
 
 .book{
-width:100px;
+width:120px;
 }
 
 .book img{
-width:100px;
-height:150px;
-}
-
-.review-box{
-width:280px;
+height:180px;
 }
 
 }
 
 </style>
-
 </head>
 
 <body>
 
-<div class="review-box" id="reviewBox">
+<div class="header">
+📚 My Reading Library
+</div>
 
-<div class="review-title" id="reviewTitle"></div>
+<div class="carousel-wrapper">
 
-<div class="review-rating" id="reviewRating"></div>
+<div class="carousel" id="carousel"></div>
 
-<div class="review-text" id="reviewText"></div>
+<div class="shelf"></div>
 
-<a class="review-link" id="reviewLink" target="_blank">
-レビューを読む
+</div>
+
+<div class="review">
+
+<h2 id="reviewTitle"></h2>
+
+<div id="reviewStars"></div>
+
+<p id="reviewText"></p>
+
+<a id="reviewLink" class="btn" target="_blank">
+レビューを見る
 </a>
 
 </div>
 
-<div class="carousel">
-<div class="track" id="track"></div>
-</div>
-
 <script>
 
-const GAS_URL="https://script.google.com/macros/s/AKfycbw8q63nwevVB2noI6Fj_KNJhPvWjLNBKiJEW_IW_oi_8qEQ-a0iLQz11bAIpUy2u7TxVQ/exec"
+const API_URL="https://script.googleusercontent.com/macros/echo?user_content_key=AY5xjrQ0kK8yWirZHS1ogXGiDYEAKzarRA2YLXr4HP_Ya2qmAEQy66s-MUPzEJyAl8u2gA-Qvz79Vg57sB0t12WrbjThsMuNfBC5DbdV3alRwlEwWqhtlStRqgUXDX_tmkujNeVE1Bhtt4ORvRsv5i8NRGcoMBh-fHrn7hQdm0Z9dFvxXbslFb1Nv-JSkGj324xR6Pzrqfave_sKX5bjWhhUv6TdAP14aMISKHduObXpmq41Mwn7ShwFVSi8FCHmmABDDLj1Q8zswNYaWlq0KJlpX01I-bnnoseVctrx5lXn&lib=MTxa2CCwbNbMYXz0meqP7D6Vl8dBRJ7dL"
 
 let books=[]
 let index=0
-let bookWidth=0
+let autoScroll
 
-let startX=0
-let dragging=false
+function stars(r){
 
-fetch(GAS_URL)
+if(!r)return""
 
-.then(res=>res.json())
+const count=r.length
+let s=""
 
-.then(data=>{
+for(let i=0;i<count;i++)s+="⭐"
 
-books=data
+return s
 
-const track=document.getElementById("track")
+}
 
-/* 無限ループ用 */
+function createBooks(data){
 
-const displayBooks=[
-books[books.length-1],
-...books,
-books[0]
-]
+const carousel=document.getElementById("carousel")
 
-displayBooks.forEach(book=>{
+books=[...data,...data,...data]
 
-const div=document.createElement("div")
+books.forEach(book=>{
 
-div.className="book"
+const el=document.createElement("div")
+el.className="book"
 
-div.innerHTML=`
+el.innerHTML=`
 
-<img src="${book.cover}">
+<div class="popup">${book.summary||""}</div>
 
-<div class="book-title">${book.title}</div>
+<img src="${book.cover}" />
 
-<a class="read-btn" href="${book.url}" target="_blank">
+<div class="stars">${stars(book.rating)}</div>
+
+<a class="btn" href="${book.url}" target="_blank">
 読む
 </a>
 
 `
 
-div.addEventListener("click",e=>{
-
-if(e.target.tagName!=="A"){
-
-window.open(book.reviewPage,"_blank")
-
-}
-
-})
-
-track.appendChild(div)
-
-})
-
-setTimeout(()=>{
-
-bookWidth=document.querySelector(".book").offsetWidth+40
-
-index=1
-updateCarousel(true)
-
-},100)
-
-setInterval(()=>{
-
-index++
-updateCarousel()
-
-},2500)
-
-initSwipe()
-
-})
-
-function updateCarousel(jump=false){
-
-const track=document.getElementById("track")
-
-if(jump){
-track.style.transition="none"
-}else{
-track.style.transition="transform .6s cubic-bezier(.4,0,.2,1)"
-}
-
-track.style.transform=`translateX(${-index*bookWidth}px)`
-
-updateCenter()
-
-setTimeout(()=>{
-
-if(index===books.length+1){
-
-track.style.transition="none"
-
-index=1
-
-track.style.transform=`translateX(${-index*bookWidth}px)`
-
-}
-
-if(index===0){
-
-track.style.transition="none"
-
-index=books.length
-
-track.style.transform=`translateX(${-index*bookWidth}px)`
-
-}
-
-updateCenter()
-
-},600)
-
-}
-
-function updateCenter(){
-
-document.querySelectorAll(".book").forEach(b=>b.classList.remove("center"))
-
-const els=document.querySelectorAll(".book")
-
-if(els[index]){
-
-els[index].classList.add("center")
-
-const book=books[(index-1+books.length)%books.length]
-
-showReview(book)
-
-}
-
-}
-
-function showReview(book){
+el.onclick=()=>{
 
 document.getElementById("reviewTitle").innerText=book.title
 
-document.getElementById("reviewRating").innerText=book.rating || ""
+document.getElementById("reviewStars").innerText=stars(book.rating)
 
 document.getElementById("reviewText").innerText=
-book.summary || "レビュー準備中"
+book.summary||"レビュー準備中"
 
 document.getElementById("reviewLink").href=
-book.reviewPage || book.url
-
-document.getElementById("reviewBox").classList.add("show")
+book.reviewPage||book.url
 
 }
 
-function initSwipe(){
-
-const carousel=document.querySelector(".carousel")
-
-carousel.addEventListener("touchstart",e=>{
-
-startX=e.touches[0].clientX
-dragging=true
+carousel.appendChild(el)
 
 })
 
-carousel.addEventListener("touchmove",e=>{
-
-if(!dragging)return
-
-const x=e.touches[0].clientX
-
-if(x-startX>60){
-
-index--
-updateCarousel()
-dragging=false
+update()
 
 }
 
-if(x-startX<-60){
+function update(){
+
+const carousel=document.getElementById("carousel")
+const items=document.querySelectorAll(".book")
+
+items.forEach(i=>i.classList.remove("center"))
+
+items[index].classList.add("center")
+
+const width=items[0].offsetWidth+40
+
+carousel.style.transform=
+`translateX(${window.innerWidth/2-width/2-index*width}px)`
+
+}
+
+function next(){
 
 index++
-updateCarousel()
-dragging=false
+
+if(index>books.length-1){
+
+index=Math.floor(books.length/3)
 
 }
 
-})
-
-carousel.addEventListener("touchend",()=>{
-
-dragging=false
-
-})
+update()
 
 }
+
+function auto(){
+
+autoScroll=setInterval(next,3000)
+
+}
+
+function stop(){
+
+clearInterval(autoScroll)
+
+}
+
+fetch(API_URL)
+.then(r=>r.json())
+.then(data=>{
+
+createBooks(data)
+
+index=Math.floor(data.length)
+
+update()
+
+auto()
+
+})
+
+/* スワイプ */
+
+let startX=0
+
+document.addEventListener("touchstart",e=>{
+
+startX=e.touches[0].clientX
+stop()
+
+})
+
+document.addEventListener("touchend",e=>{
+
+let endX=e.changedTouches[0].clientX
+
+if(startX-endX>50)next()
+
+if(endX-startX>50){
+
+index--
+
+update()
+
+}
+
+auto()
+
+})
 
 </script>
 
 </body>
-
 </html>

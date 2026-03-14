@@ -267,7 +267,7 @@ const gap=32
 const width=bookWidth+gap
 
 carousel.style.transform=
-`translateX(${window.innerWidth/2-bookWidth/2-index*width}px)`
+`translateX(${window.innerWidth/2-bookWidth/2-index*width + width/2}px)`
 
 const realIndex=index%(books.length/3)
 
@@ -289,7 +289,7 @@ update()
 
 function auto(){
 
-autoScroll=setInterval(next,4500)
+autoScroll=setInterval(next,5500)
 
 }
 

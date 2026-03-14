@@ -22,13 +22,9 @@ overflow-x:hidden;
 
 .header{
 text-align:center;
-padding:30px 20px 10px;
+padding:40px 20px 40px;
 font-size:28px;
 letter-spacing:2px;
-position:sticky;
-top:0;
-background:linear-gradient(#0f0f0f,#0f0f0f00);
-z-index:10;
 }
 
 /* カルーセル */
@@ -36,7 +32,7 @@ z-index:10;
 .carousel-wrapper{
 overflow:visible;
 position:relative;
-padding:20px 0 40px;
+padding:40px 0 80px;
 }
 
 .carousel{
@@ -103,11 +99,11 @@ transition:.2s;
 background:#ffffff40;
 }
 
-/* ポップアップ */
+/* 要約ポップアップ */
 
 .popup{
 position:absolute;
-bottom:110%;
+top:110%;
 left:50%;
 transform:translateX(-50%);
 width:220px;
@@ -150,7 +146,7 @@ line-height:1.7;
 .shelf{
 height:10px;
 background:linear-gradient(90deg,#3a2b1a,#6b4c2b,#3a2b1a);
-margin-top:20px;
+margin-top:60px;
 }
 
 /* モバイル */
@@ -214,12 +210,7 @@ function stars(r){
 
 if(!r)return""
 
-let count=r.length
-let s=""
-
-for(let i=0;i<count;i++)s+="⭐"
-
-return s
+return r
 
 }
 
@@ -236,8 +227,6 @@ el.className="book"
 
 el.innerHTML=`
 
-<div class="popup">${book.summary||""}</div>
-
 <img src="${book.cover}" loading="lazy">
 
 <div class="stars">${stars(book.rating)}</div>
@@ -245,6 +234,8 @@ el.innerHTML=`
 <a class="btn" href="${book.url}" target="_blank">
 読む
 </a>
+
+<div class="popup">${book.summary||""}</div>
 
 `
 
@@ -325,8 +316,6 @@ update()
 auto()
 
 })
-
-/* スワイプ */
 
 let startX=0
 

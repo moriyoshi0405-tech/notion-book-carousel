@@ -22,7 +22,7 @@ overflow-x:hidden;
 
 .header{
 text-align:center;
-padding:40px 20px 40px;
+padding:40px 20px;
 font-size:28px;
 letter-spacing:2px;
 }
@@ -39,7 +39,7 @@ padding:40px 0 80px;
 display:flex;
 align-items:flex-end;
 gap:40px;
-transition:transform .6s cubic-bezier(.25,.8,.25,1);
+transition:transform .8s cubic-bezier(.25,.8,.25,1);
 }
 
 /* 本 */
@@ -61,7 +61,7 @@ border-radius:6px;
 box-shadow:0 10px 25px rgba(0,0,0,0.6);
 }
 
-/* 中央拡大 */
+/* 中央 */
 
 .book.center{
 transform:scale(1.35);
@@ -122,31 +122,31 @@ line-height:1.6;
 opacity:1;
 }
 
-/* レビュー */
-
-.review{
-text-align:center;
-padding:10px 20px 40px;
-max-width:700px;
-margin:auto;
-}
-
-.review h2{
-font-weight:500;
-margin-bottom:6px;
-}
-
-.review p{
-opacity:.85;
-line-height:1.7;
-}
-
 /* 本棚 */
 
 .shelf{
 height:10px;
 background:linear-gradient(90deg,#3a2b1a,#6b4c2b,#3a2b1a);
 margin-top:60px;
+}
+
+/* レビュー */
+
+.review{
+text-align:center;
+padding:20px 20px 40px;
+max-width:700px;
+margin:auto;
+}
+
+.review h2{
+font-weight:500;
+margin-bottom:8px;
+}
+
+.review p{
+opacity:.85;
+line-height:1.7;
 }
 
 /* モバイル */
@@ -207,10 +207,16 @@ let index=0
 let autoScroll
 
 function stars(r){
-
 if(!r)return""
-
 return r
+}
+
+function updateReview(book){
+
+document.getElementById("reviewTitle").innerText=book.title
+document.getElementById("reviewStars").innerText=stars(book.rating)
+document.getElementById("reviewText").innerText=book.summary||"レビュー準備中"
+document.getElementById("reviewLink").href=book.reviewPage||book.url
 
 }
 
@@ -239,20 +245,6 @@ el.innerHTML=`
 
 `
 
-el.onclick=()=>{
-
-document.getElementById("reviewTitle").innerText=book.title
-
-document.getElementById("reviewStars").innerText=stars(book.rating)
-
-document.getElementById("reviewText").innerText=
-book.summary||"レビュー準備中"
-
-document.getElementById("reviewLink").href=
-book.reviewPage||book.url
-
-}
-
 carousel.appendChild(el)
 
 })
@@ -275,6 +267,10 @@ const width=items[0].offsetWidth+40
 carousel.style.transform=
 `translateX(${window.innerWidth/2-width/2-index*width}px)`
 
+const realIndex=index% (books.length/3)
+
+updateReview(books[realIndex])
+
 }
 
 function next(){
@@ -282,9 +278,7 @@ function next(){
 index++
 
 if(index>books.length-1){
-
 index=Math.floor(books.length/3)
-
 }
 
 update()
@@ -293,7 +287,7 @@ update()
 
 function auto(){
 
-autoScroll=setInterval(next,3000)
+autoScroll=setInterval(next,4500)
 
 }
 
@@ -333,10 +327,8 @@ let endX=e.changedTouches[0].clientX
 if(startX-endX>50)next()
 
 if(endX-startX>50){
-
 index--
 update()
-
 }
 
 auto()

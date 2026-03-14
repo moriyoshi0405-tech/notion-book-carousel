@@ -16,15 +16,67 @@ text-align:center;
 color:#333;
 }
 
+/* レビューカード */
+
+.review-box{
+
+position:absolute;
+top:30px;
+left:50%;
+transform:translateX(-50%);
+width:320px;
+
+background:rgba(255,255,255,0.85);
+backdrop-filter:blur(10px);
+
+border-radius:16px;
+
+padding:20px;
+
+box-shadow:0 10px 30px rgba(0,0,0,.15);
+
+opacity:0;
+transition:0.6s;
+
+pointer-events:none;
+
+}
+
+.review-box.show{
+opacity:1;
+transform:translate(-50%,0);
+}
+
+.review-title{
+font-size:18px;
+margin-bottom:10px;
+}
+
+.review-text{
+font-size:14px;
+line-height:1.6;
+margin-bottom:10px;
+}
+
+.review-link{
+font-size:13px;
+text-decoration:none;
+color:#333;
+border-bottom:1px solid #333;
+}
+
 /* カルーセル */
+
 .carousel{
 width:100%;
 overflow:hidden;
 position:relative;
+padding-top:160px;
 padding-bottom:120px;
 }
 
 /* 木の棚 */
+
 .carousel::after{
 content:"";
 position:absolute;
@@ -34,22 +86,21 @@ width:100%;
 height:80px;
 background:url('https://images.unsplash.com/photo-1601083748886-6a1f86b531db?auto=format&fit=crop&w=1000&q=80') repeat-x;
 background-size:cover;
-z-index:0;
 box-shadow:inset 0 5px 8px rgba(0,0,0,.2);
 }
 
 /* トラック */
+
 .track{
 display:flex;
 gap:40px;
 transition:transform .5s cubic-bezier(.4,0,.2,1);
 align-items:flex-end;
-position:relative;
-z-index:1;
 padding:0 20px;
 }
 
 /* 本 */
+
 .book{
 width:140px;
 flex-shrink:0;
@@ -67,23 +118,23 @@ object-fit:contain;
 border-radius:10px;
 box-shadow:0 6px 15px rgba(0,0,0,.15);
 background:white;
-display:block;
 }
 
-/* 中央本 */
+/* 中央 */
+
 .book.center{
 transform:scale(1.3);
 filter:blur(0);
 z-index:2;
 }
 
-/* その他 */
 .book:not(.center){
 filter:blur(2px);
 opacity:0.6;
 }
 
 /* タイトル */
+
 .book-title{
 margin-top:8px;
 font-size:13px;
@@ -93,6 +144,7 @@ line-height:1.2;
 }
 
 /* ボタン */
+
 .read-btn{
 display:inline-block;
 margin-top:6px;
@@ -102,44 +154,22 @@ background:#333;
 color:white;
 border-radius:18px;
 text-decoration:none;
-transition:.3s;
 }
 
 .read-btn:hover{
 background:#666;
 }
 
-/* レスポンシブ */
-@media(max-width:900px){
-
-.book{
-width:120px;
-}
-
-.book img{
-width:120px;
-height:180px;
-}
-
-}
-
-@media(max-width:600px){
-
-.book{
-width:100px;
-}
-
-.book img{
-width:100px;
-height:150px;
-}
-
-}
-
 </style>
 </head>
 
 <body>
+
+<div class="review-box" id="reviewBox">
+<div class="review-title" id="reviewTitle"></div>
+<div class="review-text" id="reviewText"></div>
+<a class="review-link" id="reviewLink" target="_blank">レビューを読む</a>
+</div>
 
 <div class="carousel">
 <div class="track" id="track"></div>
@@ -151,9 +181,6 @@ const GAS_URL="https://script.google.com/macros/s/AKfycbw8q63nwevVB2noI6Fj_KNJhP
 
 let index=0
 let books=[]
-
-let startX=0
-let isDragging=false
 
 fetch(GAS_URL)
 .then(res=>res.json())
@@ -177,11 +204,9 @@ div.innerHTML=`
 `
 
 div.addEventListener("click",e=>{
-
 if(e.target.tagName!=="A"){
 window.open(book.url,"_blank")
 }
-
 })
 
 track.appendChild(div)
@@ -191,42 +216,9 @@ track.appendChild(div)
 updateCarousel()
 
 setInterval(()=>{
-
 index++
 updateCarousel()
-
 },2500)
-
-const carousel=document.querySelector(".carousel")
-
-carousel.addEventListener("touchstart",e=>{
-startX=e.touches[0].clientX
-isDragging=true
-})
-
-carousel.addEventListener("touchmove",e=>{
-
-if(!isDragging) return
-
-const x=e.touches[0].clientX
-
-if(x-startX>50){
-index--
-updateCarousel()
-isDragging=false
-}
-
-if(x-startX<-50){
-index++
-updateCarousel()
-isDragging=false
-}
-
-})
-
-carousel.addEventListener("touchend",()=>{
-isDragging=false
-})
 
 })
 
@@ -244,9 +236,32 @@ track.style.transform=`translateX(${-index*width}px)`
 document.querySelectorAll(".book").forEach(b=>b.classList.remove("center"))
 
 const center=index+2
-const books=document.querySelectorAll(".book")
+const bookEls=document.querySelectorAll(".book")
 
-if(books[center]) books[center].classList.add("center")
+if(bookEls[center]){
+
+bookEls[center].classList.add("center")
+
+const book=books[center]
+
+showReview(book)
+
+}
+
+}
+
+function showReview(book){
+
+const box=document.getElementById("reviewBox")
+
+document.getElementById("reviewTitle").innerText=book.title
+
+document.getElementById("reviewText").innerText=
+book.review || "この本のレビューはNotionで読むことができます。"
+
+document.getElementById("reviewLink").href=book.url
+
+box.classList.add("show")
 
 }
 

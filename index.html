@@ -17,7 +17,7 @@ background:#f4f1ea;
 overflow:hidden;
 }
 
-/* レビューカード */
+/* レビュー */
 
 .review-box{
 
@@ -28,7 +28,7 @@ transform:translateX(-50%);
 
 width:340px;
 
-background:rgba(255,255,255,0.9);
+background:rgba(255,255,255,.92);
 backdrop-filter:blur(10px);
 
 padding:20px;
@@ -85,7 +85,7 @@ position:relative;
 
 }
 
-/* 木の棚 */
+/* 木棚 */
 
 .carousel::after{
 
@@ -107,7 +107,7 @@ box-shadow:inset 0 6px 10px rgba(0,0,0,.25);
 
 }
 
-/* 本トラック */
+/* トラック */
 
 .track{
 
@@ -126,6 +126,7 @@ transition:transform .6s cubic-bezier(.4,0,.2,1);
 .book{
 
 width:140px;
+
 flex-shrink:0;
 
 display:flex;
@@ -153,11 +154,12 @@ box-shadow:0 8px 18px rgba(0,0,0,.18);
 
 }
 
-/* 中央 */
+/* 中央本 */
 
 .book.center{
 
 transform:scale(1.35);
+
 filter:blur(0);
 
 z-index:2;
@@ -167,6 +169,7 @@ z-index:2;
 .book:not(.center){
 
 filter:blur(2px);
+
 opacity:.6;
 
 }
@@ -176,14 +179,16 @@ opacity:.6;
 .book-title{
 
 margin-top:8px;
+
 font-size:13px;
+
 text-align:center;
 
 line-height:1.4;
 
 }
 
-/* 読むボタン */
+/* ボタン */
 
 .read-btn{
 
@@ -192,9 +197,11 @@ margin-top:6px;
 padding:6px 14px;
 
 background:#333;
+
 color:white;
 
 border-radius:20px;
+
 font-size:12px;
 
 text-decoration:none;
@@ -245,9 +252,7 @@ width:280px;
 </div>
 
 <div class="carousel">
-
 <div class="track" id="track"></div>
-
 </div>
 
 <script>
@@ -256,6 +261,7 @@ const GAS_URL="https://script.google.com/macros/s/AKfycbw8q63nwevVB2noI6Fj_KNJhP
 
 let books=[]
 let index=0
+let bookWidth=0
 
 let startX=0
 let dragging=false
@@ -266,13 +272,19 @@ fetch(GAS_URL)
 
 .then(data=>{
 
-books=[...data,...data,...data]
+books=data
 
 const track=document.getElementById("track")
 
-books.forEach(book=>{
+/* 無限ループ用 */
 
-if(!book.cover)return
+const displayBooks=[
+books[books.length-1],
+...books,
+books[0]
+]
+
+displayBooks.forEach(book=>{
 
 const div=document.createElement("div")
 
@@ -304,7 +316,14 @@ track.appendChild(div)
 
 })
 
-updateCarousel()
+setTimeout(()=>{
+
+bookWidth=document.querySelector(".book").offsetWidth+40
+
+index=1
+updateCarousel(true)
+
+},100)
 
 setInterval(()=>{
 
@@ -317,29 +336,61 @@ initSwipe()
 
 })
 
-function updateCarousel(){
+function updateCarousel(jump=false){
 
 const track=document.getElementById("track")
 
-const first=document.querySelector(".book")
+if(jump){
+track.style.transition="none"
+}else{
+track.style.transition="transform .6s cubic-bezier(.4,0,.2,1)"
+}
 
-if(!first)return
+track.style.transform=`translateX(${-index*bookWidth}px)`
 
-const width=first.offsetWidth+40
+updateCenter()
 
-track.style.transform=`translateX(${-index*width}px)`
+setTimeout(()=>{
+
+if(index===books.length+1){
+
+track.style.transition="none"
+
+index=1
+
+track.style.transform=`translateX(${-index*bookWidth}px)`
+
+}
+
+if(index===0){
+
+track.style.transition="none"
+
+index=books.length
+
+track.style.transform=`translateX(${-index*bookWidth}px)`
+
+}
+
+updateCenter()
+
+},600)
+
+}
+
+function updateCenter(){
 
 document.querySelectorAll(".book").forEach(b=>b.classList.remove("center"))
 
-const center=index+2
-
 const els=document.querySelectorAll(".book")
 
-if(els[center]){
+if(els[index]){
 
-els[center].classList.add("center")
+els[index].classList.add("center")
 
-showReview(books[center])
+const book=books[(index-1+books.length)%books.length]
+
+showReview(book)
 
 }
 
@@ -360,8 +411,6 @@ book.reviewPage || book.url
 document.getElementById("reviewBox").classList.add("show")
 
 }
-
-/* スワイプ */
 
 function initSwipe(){
 
@@ -409,4 +458,5 @@ dragging=false
 </script>
 
 </body>
+
 </html>

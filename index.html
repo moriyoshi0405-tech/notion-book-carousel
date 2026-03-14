@@ -4,166 +4,136 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>My Book Shelf</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet">
-
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-2DG0CZ67MQ"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-2DG0CZ67MQ');
-</script>
 
 <style>
 
 body{
 margin:0;
 font-family:"Noto Serif JP",serif;
-background:#111;
-color:white;
+background:#f7f5f1;
 text-align:center;
-overflow-x:hidden;
-}
-
-/* 図書館背景 */
-
-body::before{
-content:"";
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:
-linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.9)),
-url("https://images.unsplash.com/photo-1507842217343-583bb7270b66");
-background-size:cover;
-background-position:center;
-z-index:-2;
-}
-
-.title{
-font-size:34px;
-margin:40px 0;
-letter-spacing:4px;
-color:#f5e6c8;
-text-shadow:0 0 15px rgba(255,210,120,.6);
+color:#333;
 }
 
 /* カルーセル */
-
 .carousel{
-position:relative;
+width:100%;
 overflow:hidden;
-padding:120px 0 100px;
+position:relative;
+padding-bottom:120px;
 }
 
+/* 木の棚 */
+.carousel::after{
+content:"";
+position:absolute;
+bottom:0;
+left:0;
+width:100%;
+height:80px;
+background:url('https://images.unsplash.com/photo-1601083748886-6a1f86b531db?auto=format&fit=crop&w=1000&q=80') repeat-x;
+background-size:cover;
+z-index:0;
+box-shadow:inset 0 5px 8px rgba(0,0,0,.2);
+}
+
+/* トラック */
 .track{
 display:flex;
 gap:40px;
-transition:transform .6s cubic-bezier(.4,0,.2,1);
+transition:transform .5s cubic-bezier(.4,0,.2,1);
 align-items:flex-end;
+position:relative;
+z-index:1;
+padding:0 20px;
 }
 
 /* 本 */
-
 .book{
 width:140px;
 flex-shrink:0;
+transition:transform .4s, filter .4s;
 cursor:pointer;
 display:flex;
 flex-direction:column;
 align-items:center;
-transition:transform .4s, filter .4s;
-transform-origin:bottom center;
 }
-
-/* 本が揺れる */
-
-.book-inner{
-animation:swing 6s ease-in-out infinite;
-}
-
-@keyframes swing{
-0%{transform:rotate(-0.6deg)}
-50%{transform:rotate(0.6deg)}
-100%{transform:rotate(-0.6deg)}
-}
-
-/* 本画像 */
 
 .book img{
 width:140px;
 height:210px;
 object-fit:contain;
 border-radius:10px;
+box-shadow:0 6px 15px rgba(0,0,0,.15);
 background:white;
-box-shadow:0 12px 30px rgba(0,0,0,.7);
+display:block;
 }
 
 /* 中央本 */
-
 .book.center{
-transform:scale(1.35) translateY(30px);
-z-index:10;
+transform:scale(1.3);
+filter:blur(0);
+z-index:2;
 }
 
-/* 周囲本 */
-
+/* その他 */
 .book:not(.center){
-filter:blur(2px) brightness(.6);
-opacity:.6;
+filter:blur(2px);
+opacity:0.6;
 }
 
 /* タイトル */
-
 .book-title{
-margin-top:10px;
-font-size:14px;
+margin-top:8px;
+font-size:13px;
 height:36px;
-color:#f5e6c8;
+overflow:hidden;
+line-height:1.2;
 }
 
 /* ボタン */
-
 .read-btn{
+display:inline-block;
 margin-top:6px;
 padding:6px 14px;
-font-size:13px;
-background:#5a4632;
+font-size:12px;
+background:#333;
 color:white;
-border-radius:20px;
+border-radius:18px;
 text-decoration:none;
 transition:.3s;
 }
 
 .read-btn:hover{
-background:#7b6249;
+background:#666;
 }
 
-/* 人気ランキング */
+/* レスポンシブ */
+@media(max-width:900px){
 
-.ranking{
-margin-top:80px;
+.book{
+width:120px;
 }
 
-.ranking h2{
-font-size:20px;
-color:#f5e6c8;
-margin-bottom:10px;
+.book img{
+width:120px;
+height:180px;
 }
 
-.ranking ul{
-list-style:none;
-padding:0;
 }
 
-.ranking li{
-margin:6px 0;
-font-size:14px;
+@media(max-width:600px){
+
+.book{
+width:100px;
+}
+
+.book img{
+width:100px;
+height:150px;
+}
+
 }
 
 </style>
@@ -171,23 +141,17 @@ font-size:14px;
 
 <body>
 
-<div class="title">おすすめの本</div>
-
 <div class="carousel">
 <div class="track" id="track"></div>
-</div>
-
-<div class="ranking">
-<h2>人気の本</h2>
-<ul id="rankingList"></ul>
 </div>
 
 <script>
 
 const GAS_URL="https://script.google.com/macros/s/AKfycbw8q63nwevVB2noI6Fj_KNJhPvWjLNBKiJEW_IW_oi_8qEQ-a0iLQz11bAIpUy2u7TxVQ/exec"
 
-let books=[]
 let index=0
+let books=[]
+
 let startX=0
 let isDragging=false
 
@@ -195,49 +159,27 @@ fetch(GAS_URL)
 .then(res=>res.json())
 .then(data=>{
 
-if(!Array.isArray(data) || data.length===0){
-console.log("no data")
-return
-}
-
-books=[...data,...data,...data,...data,...data]
-
-index=Math.floor(books.length/2)
+books=[...data,...data,...data]
 
 const track=document.getElementById("track")
 
 books.forEach(book=>{
 
-const cover=book.cover || book.image || ""
+if(!book.cover) return
 
 const div=document.createElement("div")
 div.className="book"
 
 div.innerHTML=`
-
-<div class="book-inner">
-<img src="${cover}">
-</div>
-
-<div class="book-title">${book.title || ""}</div>
-
-<a class="read-btn" 
-href="${book.amazon || "#"}" 
-target="_blank"
-onclick="trackBookClick('${book.title}')">読む</a>
-
+<img src="${book.cover}">
+<div class="book-title">${book.title}</div>
+<a class="read-btn" href="${book.url}" target="_blank">読む</a>
 `
 
 div.addEventListener("click",e=>{
 
-if(e.target.tagName==="A") return
-
-if(book.notion){
-
-trackArticleClick(book.title)
-
-window.open(book.notion,"_blank")
-
+if(e.target.tagName!=="A"){
+window.open(book.url,"_blank")
 }
 
 })
@@ -249,8 +191,10 @@ track.appendChild(div)
 updateCarousel()
 
 setInterval(()=>{
+
 index++
 updateCarousel()
+
 },2500)
 
 const carousel=document.querySelector(".carousel")
@@ -264,15 +208,15 @@ carousel.addEventListener("touchmove",e=>{
 
 if(!isDragging) return
 
-const diff=e.touches[0].clientX-startX
+const x=e.touches[0].clientX
 
-if(diff>60){
+if(x-startX>50){
 index--
 updateCarousel()
 isDragging=false
 }
 
-if(diff<-60){
+if(x-startX<-50){
 index++
 updateCarousel()
 isDragging=false
@@ -289,94 +233,22 @@ isDragging=false
 function updateCarousel(){
 
 const track=document.getElementById("track")
-const booksDOM=document.querySelectorAll(".book")
+const first=document.querySelector(".book")
 
-if(!booksDOM.length) return
+if(!first) return
 
-const width=booksDOM[0].offsetWidth+40
+const width=first.offsetWidth+40
 
-track.style.transform=
-`translateX(calc(50% - ${(index*width)+(width/2)}px))`
+track.style.transform=`translateX(${-index*width}px)`
 
-booksDOM.forEach(b=>b.classList.remove("center"))
+document.querySelectorAll(".book").forEach(b=>b.classList.remove("center"))
 
-if(booksDOM[index]){
-booksDOM[index].classList.add("center")
-}
+const center=index+2
+const books=document.querySelectorAll(".book")
 
-if(index>booksDOM.length-10){
-index=Math.floor(booksDOM.length/2)
-}
-
-if(index<10){
-index=Math.floor(booksDOM.length/2)
-}
+if(books[center]) books[center].classList.add("center")
 
 }
-
-/* ===== Analyticsイベント ===== */
-
-function trackBookClick(title){
-
-gtag('event','book_click',{
-book_title:title
-})
-
-saveRanking(title)
-
-}
-
-function trackArticleClick(title){
-
-gtag('event','article_open',{
-book_title:title
-})
-
-saveRanking(title)
-
-}
-
-/* ===== 人気ランキング ===== */
-
-function saveRanking(title){
-
-let ranking=JSON.parse(localStorage.getItem("bookRanking"))||{}
-
-if(!ranking[title]){
-ranking[title]=0
-}
-
-ranking[title]++
-
-localStorage.setItem("bookRanking",JSON.stringify(ranking))
-
-updateRanking()
-
-}
-
-function updateRanking(){
-
-const ranking=JSON.parse(localStorage.getItem("bookRanking"))||{}
-
-const sorted=Object.entries(ranking).sort((a,b)=>b[1]-a[1])
-
-const list=document.getElementById("rankingList")
-
-list.innerHTML=""
-
-sorted.slice(0,5).forEach(([title,count])=>{
-
-const li=document.createElement("li")
-
-li.textContent=`${title}（${count}クリック）`
-
-list.appendChild(li)
-
-})
-
-}
-
-updateRanking()
 
 </script>
 

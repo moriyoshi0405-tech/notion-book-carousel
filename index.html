@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>読書カルーセル</title>
+<title>My Reading Library</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500;700&display=swap" rel="stylesheet">
 
@@ -22,7 +22,7 @@ overflow-x:hidden;
 
 .header{
 text-align:center;
-padding:30px 20px 10px 20px;
+padding:30px 20px 10px;
 font-size:28px;
 letter-spacing:2px;
 position:sticky;
@@ -34,16 +34,16 @@ z-index:10;
 /* カルーセル */
 
 .carousel-wrapper{
-overflow:hidden;
+overflow:visible;
 position:relative;
-padding:10px 0 30px 0;
+padding:20px 0 40px;
 }
 
 .carousel{
 display:flex;
 align-items:flex-end;
 gap:40px;
-transition:transform 0.6s cubic-bezier(.25,.8,.25,1);
+transition:transform .6s cubic-bezier(.25,.8,.25,1);
 }
 
 /* 本 */
@@ -51,14 +51,15 @@ transition:transform 0.6s cubic-bezier(.25,.8,.25,1);
 .book{
 flex:0 0 auto;
 width:160px;
-transition:all .4s;
+transition:.4s;
 text-align:center;
 position:relative;
 }
 
 .book img{
 width:100%;
-height:240px;
+height:auto;
+max-height:260px;
 object-fit:contain;
 border-radius:6px;
 box-shadow:0 10px 25px rgba(0,0,0,0.6);
@@ -67,12 +68,12 @@ box-shadow:0 10px 25px rgba(0,0,0,0.6);
 /* 中央拡大 */
 
 .book.center{
-transform:scale(1.3);
+transform:scale(1.35);
 z-index:3;
 }
 
 .book.center img{
-box-shadow:0 20px 50px rgba(0,0,0,0.9);
+box-shadow:0 20px 60px rgba(0,0,0,0.9);
 }
 
 /* 星 */
@@ -106,7 +107,7 @@ background:#ffffff40;
 
 .popup{
 position:absolute;
-bottom:260px;
+bottom:110%;
 left:50%;
 transform:translateX(-50%);
 width:220px;
@@ -118,6 +119,7 @@ opacity:0;
 pointer-events:none;
 transition:.3s;
 box-shadow:0 10px 40px rgba(0,0,0,0.7);
+line-height:1.6;
 }
 
 .book:hover .popup{
@@ -128,7 +130,7 @@ opacity:1;
 
 .review{
 text-align:center;
-padding:10px 20px 40px 20px;
+padding:10px 20px 40px;
 max-width:700px;
 margin:auto;
 }
@@ -139,22 +141,19 @@ margin-bottom:6px;
 }
 
 .review p{
-opacity:.8;
+opacity:.85;
 line-height:1.7;
 }
 
-/* 本棚風ライン */
+/* 本棚 */
 
 .shelf{
-height:8px;
-background:linear-gradient(
-90deg,
-#3a2b1a,
-#6b4c2b,
-#3a2b1a
-);
-margin-top:10px;
+height:10px;
+background:linear-gradient(90deg,#3a2b1a,#6b4c2b,#3a2b1a);
+margin-top:20px;
 }
+
+/* モバイル */
 
 @media(max-width:600px){
 
@@ -163,7 +162,11 @@ width:120px;
 }
 
 .book img{
-height:180px;
+max-height:200px;
+}
+
+.carousel{
+gap:26px;
 }
 
 }
@@ -211,7 +214,7 @@ function stars(r){
 
 if(!r)return""
 
-const count=r.length
+let count=r.length
 let s=""
 
 for(let i=0;i<count;i++)s+="⭐"
@@ -235,7 +238,7 @@ el.innerHTML=`
 
 <div class="popup">${book.summary||""}</div>
 
-<img src="${book.cover}" />
+<img src="${book.cover}" loading="lazy">
 
 <div class="stars">${stars(book.rating)}</div>
 
@@ -343,7 +346,6 @@ if(startX-endX>50)next()
 if(endX-startX>50){
 
 index--
-
 update()
 
 }

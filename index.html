@@ -13,8 +13,8 @@
 body{
 margin:0;
 font-family:'Noto Serif JP',serif;
-background:#0f0f0f;
-color:white;
+background:#f5f1e8;
+color:#333;
 overflow-x:hidden;
 }
 
@@ -57,7 +57,7 @@ width:100%;
 max-height:220px;
 object-fit:contain;
 border-radius:6px;
-box-shadow:0 8px 22px rgba(0,0,0,0.6);
+box-shadow:0 6px 18px rgba(0,0,0,0.25);
 }
 
 /* 中央 */
@@ -68,7 +68,7 @@ z-index:3;
 }
 
 .book.center img{
-box-shadow:0 18px 45px rgba(0,0,0,0.9);
+box-shadow:0 16px 35px rgba(0,0,0,0.35);
 }
 
 /* 星 */
@@ -86,16 +86,16 @@ margin-top:6px;
 display:inline-block;
 padding:5px 12px;
 border-radius:18px;
-background:#ffffff20;
-backdrop-filter:blur(6px);
-color:white;
+background:#ffffff;
+color:#333;
 font-size:12px;
 text-decoration:none;
+border:1px solid #ddd;
 transition:.2s;
 }
 
 .btn:hover{
-background:#ffffff40;
+background:#f0f0f0;
 }
 
 /* 要約ポップアップ */
@@ -106,14 +106,14 @@ top:110%;
 left:50%;
 transform:translateX(-50%);
 width:200px;
-background:#1e1e1e;
+background:#ffffff;
 padding:10px;
 border-radius:8px;
 font-size:12px;
 opacity:0;
 pointer-events:none;
 transition:.3s;
-box-shadow:0 8px 30px rgba(0,0,0,0.7);
+box-shadow:0 6px 20px rgba(0,0,0,0.2);
 line-height:1.6;
 }
 
@@ -125,7 +125,7 @@ opacity:1;
 
 .shelf{
 height:8px;
-background:linear-gradient(90deg,#3a2b1a,#6b4c2b,#3a2b1a);
+background:linear-gradient(90deg,#8b5e34,#a87442,#8b5e34);
 margin-top:40px;
 }
 
@@ -145,7 +145,7 @@ margin-bottom:6px;
 
 .review p{
 font-size:14px;
-opacity:.85;
+opacity:.9;
 line-height:1.6;
 }
 
@@ -193,7 +193,7 @@ gap:24px;
 <p id="reviewText"></p>
 
 <a id="reviewLink" class="btn" target="_blank">
-感想記事を読む
+レビューを見る
 </a>
 
 </div>
